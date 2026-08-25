@@ -10,7 +10,7 @@ import pandas as pd
 import yfinance as yf
 
 ROOT = Path(__file__).resolve().parents[1]
-START = "2024-07-01"
+START = "2018-01-01"
 
 def main() -> int:
     tickers = [t.strip() for t in (ROOT / "tickers.txt").read_text().splitlines() if t.strip()]
