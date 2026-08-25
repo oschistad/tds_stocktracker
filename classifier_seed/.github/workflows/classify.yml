@@ -1,0 +1,29 @@
+name: classify-events
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install scikit-learn==1.8.0 joblib anthropic
+      - name: Classify events (local model + Haiku batch fallback)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/classify_events.py
+      - name: Commit annotations
+        run: |
+          git config user.name "data-bot"
+          git config user.email "actions@github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "data: event annotations"
+          git push
